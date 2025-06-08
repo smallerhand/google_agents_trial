@@ -1,0 +1,30 @@
+# Ignore virtual environment
+venv/
+*.venv
+
+# Ignore Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Git related files
+.git/
+.gitignore
+
+# Ignore Docker related files (if any specific ones needed, not usually the Dockerfile itself)
+# .dockerignore (though this file itself is fine)
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# If there are any local configuration files or secrets that should not be in the image
+# For example, if GOOGLE_APPLICATION_CREDENTIALS json key was temporarily in the project root (it shouldn't be)
+# *.json # Be careful with broad patterns, this is just an example

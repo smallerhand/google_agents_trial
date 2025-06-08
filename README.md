@@ -80,6 +80,61 @@ This is a simple Flask web application that takes an image as input and uses the
 
 3.  Upload an image and see the description!
 
+## Running with Docker
+
+You can also build and run this application using Docker. This simplifies dependency management and provides a consistent environment.
+
+**Prerequisites for Docker:**
+- Docker installed on your system.
+- You still need to have your Google Cloud Project ID and Location correctly set in `app.py` **before building the Docker image**, or you'll need to adapt the Docker setup to pass these as environment variables at runtime. For this guide, we assume you've updated `app.py`.
+- You will need to provide Google Cloud credentials to the container.
+
+**1. Build the Docker Image:**
+   Navigate to the project's root directory (where the `Dockerfile` is located) and run:
+   ```bash
+   docker build -t image-describer .
+   ```
+
+**2. Run the Docker Container:**
+   You need to make your Google Cloud credentials available to the application inside the container.
+
+   *   **Using Application Default Credentials (ADC) from your host:**
+       If you have run `gcloud auth application-default login` on your host machine, you can mount the gcloud ADC directory into the container. The location of ADC varies by OS:
+        *   Linux/macOS: `~/.config/gcloud`
+        *   Windows: `%APPDATA%\gcloud`
+
+       To run the container (example for Linux/macOS):
+       ```bash
+       docker run -p 5000:5000 \
+           -v ~/.config/gcloud:/root/.config/gcloud:ro \
+           -e GOOGLE_APPLICATION_CREDENTIALS=/root/.config/gcloud/application_default_credentials.json \
+           image-describer
+       ```
+       For Windows (using PowerShell and assuming ADC are in the default location):
+       ```powershell
+       docker run -p 5000:5000 `
+           -v "$env:APPDATA\gcloud:/root/.config/gcloud:ro" `
+           -e GOOGLE_APPLICATION_CREDENTIALS="/root/.config/gcloud/application_default_credentials.json" `
+           image-describer
+       ```
+       *(Note: The target path inside the container for gcloud config for ADC to be picked up by Python client libraries is typically `/root/.config/gcloud` when the container runs as root, which is common for default Docker setups. If your base image or user setup differs, this path might need adjustment.)*
+
+   *   **Using a Service Account Key File:**
+       If you have a service account JSON key file:
+       1.  Place the key file in a secure location on your host machine (e.g., `/path/to/your/keyfile.json`).
+       2.  Run the container, mounting the key file and setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable:
+           ```bash
+           docker run -p 5000:5000 \
+               -v /path/to/your/keyfile.json:/app/keyfile.json:ro \
+               -e GOOGLE_APPLICATION_CREDENTIALS=/app/keyfile.json \
+               image-describer
+           ```
+           *(Ensure the path `/app/keyfile.json` inside the container is accessible by the application. You might need to adjust permissions or the path if necessary. Using `:ro` makes the mounted file read-only in the container, which is good practice for credentials.)*
+
+**Important Considerations for Docker:**
+-   **Project ID & Location in `app.py`**: Remember that the `PROJECT_ID` and `LOCATION` in `app.py` are baked into the image at build time with the current `Dockerfile`. If you need to change these frequently without rebuilding, you would need to modify `app.py` to read them from environment variables and then pass those environment variables with `docker run -e ...`.
+-   **Accessing the Application**: Once the container is running, open your browser and go to `http://localhost:5000` (or `http://<docker-machine-ip>:5000` if using Docker Machine).
+
 ## Project Structure
 
 -   `app.py`: The main Flask application file containing the routes and logic for image processing and API calls.
