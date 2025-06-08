@@ -1,0 +1,4 @@
+Flask>=2.0
+google-cloud-aiplatform>=1.25.0
+protobuf>=3.19.0,<5.0.0dev # Often a dependency of google-cloud libraries, good to specify
+werkzeug>=2.0 # Flask dependency for secure_filename

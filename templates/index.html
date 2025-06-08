@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Image Describer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Upload an Image to Describe</h1>
+      <form method="post" action="/upload" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="imageUpload">Choose image:</label>
+          <input type="file" class="form-control-file" id="imageUpload" name="image" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload and Describe</button>
+      </form>
+
+      {% if description %}
+      <div class="result">
+        <h2>Description:</h2>
+        <p>{{ description }}</p>
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="error">
+        <h2>Error:</h2>
+        <p>{{ error }}</p>
+      </div>
+      {% endif %}
+
+      {% if uploaded_image %}
+      <div class="uploaded-image">
+        <h2>Uploaded Image:</h2>
+        <img src="{{ url_for('static', filename='uploads/' + uploaded_image) }}" alt="Uploaded Image" style="max-width: 500px; margin-top: 20px;">
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
